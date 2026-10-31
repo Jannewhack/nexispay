@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NexisPay Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>:root{--bg:#F1F3F9;--card:#fff;--ink:#12142F;--mute:#6A6E92;--line:#E2E5F1;--acc:#5B3FF5;--ok:#0FA47A;--warn:#D98A0B;--bad:#D6455D;--hd1:#12142F;--hd2:#2A1FA8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0D20;--card:#151837;--ink:#EEF0FF;--mute:#9A9EC7;--line:#252951;--acc:#8A74FF;--ok:#35D6A5;--warn:#F2B24A;--bad:#FF7088;--hd1:#0A0C1E}}
+:root[data-theme="dark"]{--bg:#0B0D20;--card:#151837;--ink:#EEF0FF;--mute:#9A9EC7;--line:#252951;--acc:#8A74FF;--ok:#35D6A5;--warn:#F2B24A;--bad:#FF7088;--hd1:#0A0C1E}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:15px}
+.app{max-width:760px;margin:0 auto;height:100%;display:flex;flex-direction:column}
+header{background:linear-gradient(120deg,var(--hd1),var(--hd2));color:#fff;padding:14px 18px;display:flex;align-items:center;gap:10px}
+.logo{width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,#8A74FF,#fff);position:relative}
+.logo:after{content:"";position:absolute;inset:8px;border:3px solid #2A1FA8;border-radius:4px;border-right-color:transparent}
+header b{font-size:18px}.badge{background:#F5A524;color:#12142F;font-size:10px;font-weight:800;border-radius:7px;padding:3px 7px}
+header .sp{flex:1}.ib{width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;font-size:16px;cursor:pointer}
+main{flex:1;overflow-y:auto;padding:16px 16px 96px}
+section{display:none}section.on{display:block}
+h2{font-size:22px;letter-spacing:-.4px;margin-bottom:2px}.sub{color:var(--mute);font-size:13px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px}
+.kpi small{color:var(--mute);font-size:12px;font-weight:600}.kpi b{display:block;font-size:21px;letter-spacing:-.5px;margin-top:4px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin-bottom:14px}
+.card h3{font-size:15px;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.av{width:40px;height:40px;border-radius:13px;background:var(--bg);display:grid;place-items:center;font-weight:800;color:var(--acc);flex:none}
+.row b{display:block;font-size:14px}.row em{font-style:normal;color:var(--mute);font-size:12px}
+.r{margin-left:auto;text-align:right;font-weight:800;font-size:14px}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:8px;padding:2px 8px;margin-top:3px}
+.t-ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+.t-w{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.t-b{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.in{width:100%;height:48px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 15px inherit;font-family:inherit;padding:0 14px;margin-bottom:12px}
+.lbl{display:block;font-size:12px;font-weight:700;color:var(--mute);margin-bottom:5px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{height:46px;border:0;border-radius:14px;background:var(--acc);color:#fff;font:800 14px inherit;font-family:inherit;cursor:pointer;padding:0 16px}
+.btn.g{background:var(--card);color:var(--ink);border:1px solid var(--line)}.btn.ok{background:var(--ok)}.btn.bad{background:var(--bad)}
+.btn.full{width:100%}.btns{display:flex;gap:8px;margin-top:10px}.btns .btn{flex:1;height:42px;font-size:13px}
+.line{display:flex;justify-content:space-between;gap:10px;padding:7px 0;color:var(--mute);font-size:14px}.line b{color:var(--ink);text-align:right}
+nav{position:fixed;left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:736px;bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border:1px solid var(--line);border-radius:24px;display:flex;padding:6px;box-shadow:0 10px 30px rgba(18,20,47,.16)}
+nav button{flex:1;border:0;background:none;color:var(--mute);font:700 10.5px inherit;font-family:inherit;padding:8px 0;border-radius:18px;cursor:pointer}
+nav button span{display:block;font-size:19px}nav button.on{background:var(--acc);color:#fff}
+.sheet{position:fixed;inset:0;background:rgba(10,12,30,.55);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.sheet.on{display:flex}.sheet>div{background:var(--card);width:100%;max-width:760px;border-radius:26px 26px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px));max-height:90%;overflow-y:auto}
+#lock{position:fixed;inset:0;background:var(--bg);z-index:30;display:flex;align-items:center;justify-content:center;padding:20px}#lock>div{width:100%;max-width:400px}
+.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-120px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:700;font-size:14px;transition:.3s;z-index:40;max-width:90%}
+.toast.show{transform:translate(-50%,0)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="lock"><div>
+ <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div class="logo"></div><b style="font-size:22px">NexisPay</b><span class="badge">ADMIN</span></div>
+ <p class="sub" style="margin-bottom:18px">Restricted area. Sign in with your admin account.</p>
+ <span class="lbl">Admin email</span><input class="in" id="ae" type="email" autocomplete="email">
+ <span class="lbl">Password</span><input class="in" id="ap" type="password" autocomplete="current-password">
+ <button class="btn full" id="alogin">Sign in</button>
+</div></div>
+<div class="app">
+<header><div class="logo"></div><b>NexisPay</b><span class="badge">ADMIN</span><span class="sp"></span><button class="ib" id="rf" aria-label="Refresh">↻</button></header>
+<main>
+<section id="ov" class="on"><h2>Overview</h2><p class="sub">Live numbers from your database.</p><div class="grid" id="kpis"></div><div class="card"><h3>Needs your attention</h3><div id="alerts"></div></div></section>
+<section id="mer"><h2>Merchants</h2><p class="sub">Approve, review and suspend merchants.</p><div class="card" id="mlist"></div></section>
+<section id="pay"><h2>Payments</h2><p class="sub">Customer payments, fees and conversions.</p><div class="card" id="plist"></div></section>
+<section id="out"><h2>Payouts</h2><p class="sub">Pay the merchant yourself, then approve.</p><div class="card" id="olist"></div></section>
+<section id="set"><h2>Settings</h2><p class="sub">Fees, limits and rates. Changes apply to new transactions.</p>
+ <div class="card"><h3>Fee rules and limits</h3><div class="two">
+  <div><span class="lbl">Payment fee (₹ per 1,000)</span><input class="in" id="s_pay_fee_per_1000" inputmode="decimal"></div>
+  <div><span class="lbl">Minimum payment fee (₹)</span><input class="in" id="s_pay_fee_min_inr" inputmode="decimal"></div>
+  <div><span class="lbl">Payout fee (৳ per 1,000)</span><input class="in" id="s_payout_fee_per_1000" inputmode="decimal"></div>
+  <div><span class="lbl">Minimum payout fee (৳)</span><input class="in" id="s_payout_fee_min_bdt" inputmode="decimal"></div>
+  <div><span class="lbl">Minimum payment (₹)</span><input class="in" id="s_min_payment_inr" inputmode="decimal"></div>
+  <div><span class="lbl">Maximum payment (₹)</span><input class="in" id="s_max_payment_inr" inputmode="decimal"></div>
+  <div><span class="lbl">Minimum payout (৳)</span><input class="in" id="s_min_payout_bdt" inputmode="decimal"></div><div></div>
+  <div><span class="lbl">1 USDT = ₹</span><input class="in" id="s_inr_per_usdt" inputmode="decimal"></div>
+  <div><span class="lbl">1 USDT = ৳</span><input class="in" id="s_bdt_per_usdt" inputmode="decimal"></div></div>
+  <button class="btn full" id="ssave">Save settings</button></div>
+ <div class="card"><h3>Add a test payment</h3><p class="sub">Credits a merchant for testing, before a real gateway is connected.</p>
+  <span class="lbl">Merchant</span><select class="in" id="tm"></select>
+  <span class="lbl">Customer paid (₹)</span><input class="in" id="ta" inputmode="decimal" placeholder="500">
+  <button class="btn full" id="tgo">Add test payment</button></div>
+ <div class="card"><h3>Audit log</h3><div id="log"></div></div>
+ <button class="btn g full" id="alogout">Sign out</button></section>
+</main>
+<nav><button class="on" data-s="ov"><span>◧</span>Overview</button><button data-s="mer"><span>☷</span>Merchants</button><button data-s="pay"><span>⇄</span>Payments</button><button data-s="out"><span>↧</span>Payouts</button><button data-s="set"><span>⚙</span>Settings</button></nav>
+</div>
+<div class="sheet" id="sheet"><div id="sbody"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SB=supabase.createClient("https://fvhqaxhnnqvftirhkbim.supabase.co","sb_publishable_hoNP6P-I-tTjT4XNVnS8cQ_VQQFn_R0");
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const f=n=>Math.round(Number(n)).toLocaleString("en"),f2=n=>Number(n).toFixed(2);
+const when=t=>new Date(t).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+const TG={active:["t-ok","Active"],pending:["t-w","Pending"],suspended:["t-b","Suspended"],paid:["t-ok","Paid"],waiting:["t-w","Waiting"],failed:["t-b","Failed"],rejected:["t-b","Rejected"]};
+const tag=s=>{const t=TG[s]||["t-w",esc(s)];return `<span class="tag ${t[0]}">${t[1]}</span>`};
+let D=null;
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2800)}
+function show(id){$$("section").forEach(x=>x.classList.toggle("on",x.id===id));$$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.s===id));$("main").scrollTop=0}
+$$("nav button").forEach(b=>b.onclick=()=>show(b.dataset.s));
+$("#sheet").onclick=e=>{if(e.target.id==="sheet")$("#sheet").classList.remove("on")};
+async function enter(){
+ const u=(await SB.auth.getUser()).data.user;if(!u)return;
+ const p=await SB.from("profiles").select("role").eq("id",u.id).single();
+ if(p.error||p.data.role!=="admin"){await SB.auth.signOut();return toast("This account is not an admin")}
+ $("#lock").style.display="none";await load()}
+async function load(){
+ const R=await Promise.all([SB.from("profiles").select("id,brand,status,role,created_at").order("created_at",{ascending:false}),SB.from("merchant_balance").select("*"),SB.from("payments").select("*").order("created_at",{ascending:false}).limit(100),SB.from("withdrawals").select("id,merchant_id,amount_bdt,fee_bdt,method,status,created_at").order("created_at",{ascending:false}).limit(100),SB.from("settings").select("*").single(),SB.from("audit_log").select("*").order("created_at",{ascending:false}).limit(15)]);
+ const bad=R.find(x=>x.error);if(bad)return toast(bad.error.message);
+ const [pr,bl,py,wd,st,lg]=R;
+ D={mer:pr.data.filter(p=>p.role==="merchant"),name:Object.fromEntries(pr.data.map(p=>[p.id,p.brand])),bal:Object.fromEntries(bl.data.map(b=>[b.merchant_id,Number(b.balance_bdt)])),py:py.data,wd:wd.data,cfg:st.data,lg:lg.data};
+ render()}
+function render(){
+ const paid=D.py.filter(x=>x.status==="paid"),pend=D.wd.filter(w=>w.status==="pending"),pm=D.mer.filter(m=>m.status==="pending");
+ const sum=(a,k)=>a.reduce((s,x)=>s+Number(x[k]),0),owed=Object.values(D.bal).reduce((a,b)=>a+b,0);
+ $("#kpis").innerHTML=[["Payments received","₹"+f(sum(paid,"amount_inr"))],["Fees earned","₹"+f(sum(paid,"fee_inr"))],["Platform wallet",f2(sum(paid,"usdt_received"))+" USDT"],["Owed to merchants","৳"+f(owed)],["Active merchants",D.mer.filter(m=>m.status==="active").length],["Pending payouts",pend.length+" · ৳"+f(sum(pend,"amount_bdt"))]].map(k=>`<div class="kpi"><small>${k[0]}</small><b>${k[1]}</b></div>`).join("");
+ const al=[];if(pend.length)al.push(["৳",pend.length+" payout request(s) waiting","Open Payouts"]);if(pm.length)al.push(["☷",pm.length+" merchant(s) waiting for approval","Open Merchants"]);
+ $("#alerts").innerHTML=al.map(a=>`<div class="row"><div class="av">${a[0]}</div><div><b>${a[1]}</b><em>${a[2]}</em></div></div>`).join("")||'<p class="sub">Nothing needs attention.</p>';
+ $("#mlist").innerHTML=D.mer.map(m=>`<div class="row" data-m="${m.id}" style="cursor:pointer"><div class="av">${esc(m.brand[0]||"?")}</div><div><b>${esc(m.brand)}</b><em>Balance ৳${f(D.bal[m.id]||0)}</em></div><div class="r">${tag(m.status)}</div></div>`).join("")||'<p class="sub">No merchants yet.</p>';
+ $$("#mlist [data-m]").forEach(r=>r.onclick=()=>openM(r.dataset.m));
+ $("#plist").innerHTML=D.py.map(x=>`<div class="row"><div class="av">₹</div><div><b>${esc(D.name[x.merchant_id]||"")}</b><em>${when(x.created_at)} · fee ₹${f2(x.fee_inr)} · +${f2(x.usdt_received)} USDT to wallet · merchant ৳${f(x.net_bdt)}</em></div><div class="r">₹${f(x.amount_inr)}<br>${tag(x.status)}</div></div>`).join("")||'<p class="sub">No payments yet.</p>';
+ $("#olist").innerHTML=D.wd.map(w=>`<div class="row" style="align-items:flex-start"><div class="av">৳</div><div style="flex:1"><b>${esc(D.name[w.merchant_id]||"")}</b><em>${when(w.created_at)} · ${esc(w.method)} · fee ৳${f2(w.fee_bdt)}</em>${w.status==="pending"?`<div class="btns"><button class="btn ok" data-w="${w.id}">Pay and approve</button><button class="btn bad" data-r="${w.id}">Reject</button></div>`:""}</div><div class="r">৳${f(w.amount_bdt)}<br>${tag(w.status)}</div></div>`).join("")||'<p class="sub">No payout requests.</p>';
+ $$("#olist [data-w]").forEach(b=>b.onclick=()=>openW(b.dataset.w));
+ $$("#olist [data-r]").forEach(b=>b.onclick=async()=>{if(!confirm("Reject this request and return the money to the merchant balance?"))return;const r=await SB.rpc("reject_withdrawal",{p_id:b.dataset.r});if(r.error)return toast(r.error.message);toast("Rejected");load()});
+ Object.entries(D.cfg).forEach(([k,v])=>{const e=$("#s_"+k);if(e)e.value=v});
+ $("#tm").innerHTML=D.mer.filter(m=>m.status==="active").map(m=>`<option value="${m.id}">${esc(m.brand)}</option>`).join("")||'<option value="">No active merchants</option>';
+ $("#log").innerHTML=D.lg.map(l=>`<div class="row"><div><b>${esc(l.action)}</b><em>${when(l.created_at)}</em></div></div>`).join("")||'<p class="sub">No entries yet.</p>'}
+function openM(id){const m=D.mer.find(x=>x.id===id);
+ $("#sbody").innerHTML=`<div class="row"><div class="av">${esc(m.brand[0]||"?")}</div><div><b style="font-size:17px">${esc(m.brand)}</b><em>Joined ${when(m.created_at)}</em></div><div class="r">${tag(m.status)}</div></div><div class="line">Online balance<b>৳${f(D.bal[id]||0)}</b></div><div class="btns">${m.status==="active"?'<button class="btn bad" data-a="suspended">Suspend</button>':'<button class="btn ok" data-a="active">'+(m.status==="pending"?"Approve":"Reactivate")+'</button>'}<button class="btn g" id="sx">Close</button></div>`;
+ $("#sheet").classList.add("on");$("#sx").onclick=()=>$("#sheet").classList.remove("on");
+ $$("#sbody [data-a]").forEach(b=>b.onclick=async()=>{const r=await SB.from("profiles").update({status:b.dataset.a}).eq("id",id);if(r.error)return toast(r.error.message);$("#sheet").classList.remove("on");toast(m.brand+": "+b.dataset.a);load()})}
+async function openW(id){
+ const r=await SB.rpc("get_payout_details",{p_id:id});if(r.error)return toast(r.error.message);
+ const w=Array.isArray(r.data)?r.data[0]:r.data,net=Number(w.amount_bdt)-Number(w.fee_bdt);
+ $("#sbody").innerHTML=`<h3 style="margin-bottom:8px">Pay and approve</h3><div class="line">Merchant<b>${esc(D.name[w.merchant_id]||"")}</b></div><div class="line">Send via<b>${esc(w.method)}</b></div><div class="line">Account holder<b>${esc(w.account_name)}</b></div>${w.bank_name?`<div class="line">Bank<b>${esc(w.bank_name)}</b></div>`:""}<div class="line">${w.method==="Bank"?"Account number":"Number"}<b style="font-size:18px;letter-spacing:.5px">${esc(w.account_number)}</b></div><button class="btn g full" id="cpn" style="margin:6px 0">Copy number</button><div class="line">Amount to send<b>৳${f2(net)}</b></div><div class="line">Fee kept<b>৳${f2(w.fee_bdt)}</b></div><span class="lbl" style="margin-top:10px">Your payment reference (e.g. bKash TrxID)</span><input class="in" id="wref" placeholder="Paste the reference"><div class="btns"><button class="btn ok" id="wok">I paid, approve</button><button class="btn g" id="wx">Cancel</button></div>`;
+ $("#sheet").classList.add("on");$("#wx").onclick=()=>$("#sheet").classList.remove("on");
+ $("#cpn").onclick=()=>{try{navigator.clipboard.writeText(w.account_number)}catch(e){}toast("Number copied")};
+ $("#wok").onclick=async()=>{const ref=$("#wref").value.trim();if(ref.length<6)return toast("Enter the payment reference");
+  const a=await SB.rpc("approve_withdrawal",{p_id:w.id,p_ref:ref});if(a.error)return toast(a.error.message);$("#sheet").classList.remove("on");toast("Payout approved");load()}}
+$("#ssave").onclick=async()=>{const n={};for(const k of Object.keys(D.cfg)){const e=$("#s_"+k);if(!e)continue;n[k]=parseFloat(e.value);if(!(n[k]>=0))return toast("Check the values")}
+ if(n.min_payment_inr>=n.max_payment_inr||!n.inr_per_usdt||!n.bdt_per_usdt)return toast("Check limits and rates");
+ const r=await SB.from("settings").update(n).eq("id",1);if(r.error)return toast(r.error.message);toast("Settings saved");load()};
+$("#tgo").onclick=async()=>{const a=parseFloat($("#ta").value),m=$("#tm").value;if(!m||!(a>0))return toast("Choose a merchant and an amount");
+ const r=await SB.rpc("admin_test_payment",{p_merchant:m,p_amount:a});if(r.error)return toast(r.error.message);$("#ta").value="";toast("Test payment added");load()};
+$("#alogin").onclick=async()=>{const e=$("#ae").value.trim(),p=$("#ap").value;if(!/^\S+@\S+\.\S+$/.test(e)||p.length<8)return toast("Enter your admin email and password");
+ const r=await SB.auth.signInWithPassword({email:e,password:p});if(r.error)return toast(r.error.message);$("#ap").value="";enter()};
+$("#alogout").onclick=async()=>{await SB.auth.signOut();D=null;$("#lock").style.display="flex";show("ov")};
+$("#rf").onclick=()=>load();
+SB.auth.getSession().then(({data})=>{if(data.session)enter()});
+
+</script>
+</body>
+</html>
